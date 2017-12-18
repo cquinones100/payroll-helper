@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as employeeDataActions from './actions/employeeDataActions'
 import * as generalActions from './actions/generalActions'
+import * as generalParsing from './utils/parsing/generalParsing'
 
 import './App.css';
 
@@ -17,24 +18,37 @@ class App extends Component {
     document.querySelector('#file-upload').value = ''
   }
 
-  isEmployeeData = (array) => {
-    return array
-            .filter(line => line.split(',').length === 5)
-              .length === array.length -1 &&
-                /app data/.exec(this.props.uploadedFile.name)
+  buttonOnClick = (event) => {
+    document.querySelector('#file-upload').click()
   }
 
   processData = (text, title) => {
     const lines = text.split(/\r\n|\n/)
+    if (generalParsing.isEmployeeData(lines, this.props.uploadedFile)) {
       this.props.addEmployeeData(lines)
+      alert('employee data added')
+    } else {
+      alert('file not recognized')
+    }
   }
 
   render() {
     return (
       <div className="App">
-        <form onSubmit={this.onSubmit}>
-          <input id="file-upload" type="file" onChange={this.onChange} accept=".csv"/>
-        </form>
+        <div className="upload-file">
+          <div
+            className='upload-file-button'
+            onClick={this.buttonOnClick}>
+              upload a file
+          </div>
+          <input
+            id="file-upload"
+            type="file"
+            onChange={this.onChange}
+            accept='.csv'
+            style={{display: 'none'}}
+            />
+        </div>
       </div>
     );
   }
