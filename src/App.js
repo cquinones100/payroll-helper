@@ -25,8 +25,10 @@ class App extends Component {
   }
 
   clearOnClick = () => {
-    localStorage.clear()
-    this.props.clearData()
+    if (window.confirm('are you sure you want to clear all data?')) {
+      localStorage.clear()
+      this.props.clearData()
+    }
   }
 
   buttonOnClick = (event) => {

@@ -58,15 +58,16 @@ export const parseTimeCard = (data, employeeData) => {
         name: name,
         employeeId: employeeId,
         regularHours: 0.0,
+        otHours: 0.0
       }
     } else if (isAnEmployeeRow(newRow)) {
       dataObj.employees[name].regularHours += parseFloat(newRow[11])
-      if (dataObj.employes[name].regularHours > 40) {
+      if (dataObj.employees[name].regularHours > 40) {
         const difference = dataObj.employees[name].regularHours - 40
         dataObj.employees[name].regularHours = 40
         dataObj.employees[name].otHours += difference
       } else {
-        dataObj.employees[name].otHours = 0
+        dataObj.employees[name].otHours = 0.0
       }
       if (!dataObj.employees[name].rate) {
         dataObj.employees[name].rate = newRow[15]
