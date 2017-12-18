@@ -2,46 +2,31 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as employeeDataActions from './actions/employeeDataActions'
+import * as generalActions from './actions/generalActions'
 
 import './App.css';
 
 class App extends Component {
-  constructor (props) {
-    super(props)
-
-    this.state = {
-      employeeData: [],
-      locationData: [],
-      uploadedFile: null
-    }
-  }
 
   onChange = (event) => {
     event.preventDefault()
-    this.setState({
-      uploadedFile: event.target.files[0]
-    }, (event) => {
-      const reader = new FileReader()
-      reader.onload = (event) => this.processData(event.target.result)
-      reader.readAsText(this.state.uploadedFile)
-      document.querySelector('#file-upload').value = ''
-    })
+    this.props.addUploadedFile(event.target.files[0].name)
+    const reader = new FileReader()
+    reader.onload = (event) => this.processData(event.target.result)
+    reader.readAsText(event.target.files[0])
+    document.querySelector('#file-upload').value = ''
   }
 
   isEmployeeData = (array) => {
     return array
             .filter(line => line.split(',').length === 5)
               .length === array.length -1 &&
-                /app data/.exec(this.state.uploadedFile.name)
+                /app data/.exec(this.props.uploadedFile.name)
   }
 
   processData = (text, title) => {
     const lines = text.split(/\r\n|\n/)
-    if (this.isEmployeeData(lines)) {
-      this.setState({
-        employeeData: lines
-      }, )
-    }
+      this.props.addEmployeeData(lines)
   }
 
   render() {
@@ -57,13 +42,15 @@ class App extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    employeeData: state.employeeData
+    employeeData: state.employeeData,
+    uploadedFile: state.general.uploadedFile
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
-    addEmployeeData: employeeDataActions.addEmployeeData
+    addEmployeeData: employeeDataActions.addEmployeeData,
+    addUploadedFile: generalActions.addUploadedFile
   }, dispatch)
 }
 

@@ -1,5 +1,5 @@
 import * as types from '../constants/actionTypes'
-import * as actions from '../actions/employeeDataActions'
+// import * as actions from '../actions/employeeDataActions'
 
 const initialState = {
   data: [],
@@ -11,7 +11,8 @@ export default function employeeDataReducer (state = initialState, action) {
     case types.ADD_EMPLOYEE_DATA:
       return {
         ...state,
-        data: action.data
+        data: action.data,
+        dateUploaded: Date.now()
       }
     default:
       return state

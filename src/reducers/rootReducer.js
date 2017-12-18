@@ -1,9 +1,11 @@
 import { combineReducers, createStore, compose } from 'redux'
 import employeeDataReducer from './employeeDataReducer'
+import generalReducer from './generalReducer'
 import { saveState, loadState } from '../utils/storage'
 
 const rootReducer = combineReducers({
-  employeeData: employeeDataReducer
+  employeeData: employeeDataReducer,
+  general: generalReducer
 })
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
@@ -17,7 +19,5 @@ export const store = createStore(
 )
 
 store.subscribe(() => {
-  saveState({
-    state: store.getState()
-  })
+  saveState(store.getState())
 })
