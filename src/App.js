@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import * as employeeDataActions from './actions/employeeDataActions'
+
 import './App.css';
 
 class App extends Component {
@@ -51,4 +55,16 @@ class App extends Component {
   }
 }
 
-export default App;
+const mapStateToProps = (state, ownProps) => {
+  return {
+    employeeData: state.employeeData
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return bindActionCreators({
+    addEmployeeData: employeeDataActions.addEmployeeData
+  }, dispatch)
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App)

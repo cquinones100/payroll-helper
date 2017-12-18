@@ -6,7 +6,7 @@ const initialState = {
   dateUploaded: null
 }
 
-export default const employeeDataReducer = (state = initialState, action) {
+export default function employeeDataReducer (state = initialState, action) {
   switch (action.type) {
     case types.ADD_EMPLOYEE_DATA:
       return {
