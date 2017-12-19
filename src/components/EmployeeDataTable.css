@@ -34,6 +34,6 @@ table.employee-data {
 
 .labor-data-selection:hover {
   background-color: #ff3399;
-  color: white;
+  /* color: white; */
   cursor: pointer;
 }

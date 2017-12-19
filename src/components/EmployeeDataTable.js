@@ -3,7 +3,7 @@ import './EmployeeDataTable.css'
 
 export default function EmployeeDataTable (props) {
 
-  const dataRows = props.data.slice(0, props.data.length -1)
+  const dataRows = props.data.slice(0, props.data.length - 1)
   .reduce((acc, curr, index) => {
     const arr = curr.split(',')
     acc.push(
