@@ -87,14 +87,19 @@ export const parseTimeCard = (data, employeeData) => {
     if (isANewEmployee(newRow)) {
       name = getNameFromRow(newRow)
       employees = addNewEmployee(employees, employeeData, name)
+      if (isSpreadOfHours(hours)) { employees = applySoh(employees, name, hours) }
+      if (isCallInPay(hours, calnpMax)) {
+        employees = applyCallInPay(employees, name, newRow)
+      }
     } else if (isAnEmployeeRow(newRow)) {
       employees = applyEmployeeHours(employees, hours, name)
       if (!employees[name].rate) { emp.rate = newRow[15] }
+      if (isSpreadOfHours(hours)) { employees = applySoh(employees, name, hours) }
+      if (isCallInPay(hours, calnpMax)) {
+        employees = applyCallInPay(employees, name, newRow)
+      }
     }
-    if (isSpreadOfHours(hours)) { employees = applySoh(employees, name, hours) }
-    if (isCallInPay(hours, calnpMax)) {
-      employees = applyCallInPay(employees, name, newRow)
-    }
+
     dataObj = {
       ...dataObj,
       employees: employees
