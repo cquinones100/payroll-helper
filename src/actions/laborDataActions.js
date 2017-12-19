@@ -1,7 +1,7 @@
 import * as types from '../constants/actionTypes'
 
-export const addLaborData = (data) => (
-  {type: types.ADD_LABOR_DATA, data}
+export const addLaborData = (data, calnp) => (
+  {type: types.ADD_LABOR_DATA, data, calnp}
 )
 
 export const removeLaborDataByLocation = (location) => (

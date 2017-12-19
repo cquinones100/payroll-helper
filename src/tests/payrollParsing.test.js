@@ -153,6 +153,52 @@ describe('spread of hours', () => {
   })
 })
 
+describe('call in pay', () => {
+  const employees = {
+    'Smith, John': {
+      name: 'Smith, John',
+      regularHours: 40.0,
+      employeeId: '11111',
+      otHours: 1.0
+    },
+    'Smith, Jane': {
+      name: 'Smith, Jane',
+      regularHours: 10.0,
+      spreadOfHours: 1,
+      employeeId: '11112',
+      otHours: 0.0
+    }
+  }
+  const expectedEmployees = {
+    'Smith, John': {
+      name: 'Smith, John',
+      regularHours: 40.0,
+      employeeId: '11111',
+      otHours: 1.0
+    },
+    'Smith, Jane': {
+      name: 'Smith, Jane',
+      regularHours: 10.0,
+      spreadOfHours: 1,
+      callInPay: ['9/18/2017'],
+      employeeId: '11112',
+      otHours: 0.0
+    }
+  }
+  const name = 'Smith, Jane'
+  const hours = '2.0'
+  const calnpMax = '3'
+
+  const row = ['9/18/2017', , 'FOH Counter', '9:30 AM', '5:30 PM', , , '2', '0', '0', , '8', '0', , '0', '$12.50', '$100.00', , '$0.00', , '$4.00']
+
+  it('can tell if call in pay is needed', () => {
+    expect(parsing.isCallInPay(hours, calnpMax)).toEqual(true)
+  })
+
+  it('applies callinpay', () => {
+    expect(parsing.applyCallInPay(employees, name, row)).toEqual(expectedEmployees)
+  })
+})
 
 describe('parsing time card', () => {
   const data = [

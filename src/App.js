@@ -50,6 +50,14 @@ class App extends Component {
       if (this.props.employeeData.data.length > 0) {
         const laborData = payrollParsing
                           .parseTimeCard(lines, this.props.employeeData.data)
+        const promptSpreadOfHours = () => {
+          const spreadOfHours = prompt('Please enter the spread of hours minimum for this location')
+          if (spreadOfHours === null) {
+            return promptSpreadOfHours()
+          }
+          return spreadOfHours
+        }
+
         if (generalParsing
             .isADuplicateLocation(laborData, this.props.laborData.data)
           ) {
@@ -61,7 +69,7 @@ class App extends Component {
               return alert('writing skipped')
             }
           }
-        this.props.addLaborData(laborData)
+        this.props.addLaborData(laborData, promptSpreadOfHours())
         return alert('labor data added')
       } else {
         return alert('please upload employee data first')

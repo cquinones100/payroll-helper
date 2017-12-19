@@ -7,6 +7,7 @@ const initialState = {
 export default function laborDataReducer (state = initialState, action) {
   switch (action.type) {
     case types.ADD_LABOR_DATA:
+      action.data.calnp = action.calnp
       return {
         ...state,
         data: state.data.concat(action.data)

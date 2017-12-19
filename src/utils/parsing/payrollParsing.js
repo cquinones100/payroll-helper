@@ -71,6 +71,7 @@ const isAnEmployeeRow = (row) => (
 export const parseTimeCard = (data, employeeData) => {
   const location = getLocationFromTimeCard(data[0])
   const payPeriod = getPayPeriodFromTimeCard(data[1])
+  const calnpMax = data.calnp
   const dataObj = {
     location: location,
     payPeriod: payPeriod,
@@ -95,6 +96,9 @@ export const parseTimeCard = (data, employeeData) => {
       }
     }
     if (isSpreadOfHours(hours)) { applySoh(dataObj.employees, name, hours) }
+    if (isCallInPay(hours, calnpMax)) {
+      applyCallInPay(dataObj.employees, name, newRow)
+    }
   })
   return dataObj
 }
@@ -110,6 +114,24 @@ export const applySoh = (employees, name, hours) => {
       ...employees[name],
       regularHours: parseFloat(employees[name].regularHours) - spreadOfHours,
       spreadOfHours: spreadOfHours
+    }
+  }
+}
+
+export const isCallInPay = (hours, calnpMax) => (
+  parseFloat(hours) < parseFloat(calnpMax)
+)
+
+export const applyCallInPay = (employees, name, row) => {
+  const newemp = {...employees}
+  if ([newemp[name].callInPay === undefined]) {
+    newemp[name].callInPay = []
+  }
+  return {
+    ...newemp,
+    [name]: {
+      ...newemp[name],
+      callInPay: newemp[name].callInPay.concat(row[0])
     }
   }
 }

@@ -112,7 +112,35 @@ describe('parsing the CSV', () => {
     })
 
     it('applies a spread of hours line', () => {
-      expect(parsing.buildSohLine(emp2)).toEqual('11111,E,SOH,2.00')
+      expect(parsing.buildSohLine(emp2)).toEqual('11111,E,SOHBN,2.00')
     })
+  })
+})
+
+describe('call in pay', () => {
+  const employeeData = {
+    location: 'Store 1',
+    payPeriod: '9/18/2017 - 9/24/2017',
+    employees: {
+      'Smith, John': {
+        name: "Smith, John",
+        employeeId: '11111',
+        regularHours: '40.00',
+        callInPay: ['9/12/2017'],
+        otHours: '1.20',
+        spreadOfHours: '2.0',
+        rate: '15.00'
+      }
+    }
+  }
+
+  const emp2 = employeeData.employees['Smith, John']
+
+  it('determines if there is a call in pay line', () => {
+    expect(parsing.hasCalnp(emp2)).toEqual(true)
+  })
+
+  it('applies a spread of hours line', () => {
+    expect(parsing.buildCalnpLines(emp2)).toEqual(["11111,E,CALNP,40.00,9/12/2017"])
   })
 })

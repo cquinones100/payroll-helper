@@ -5,7 +5,7 @@ export const isATimeCard = (lines) => (
 )
 
 export const isEmployeeData = (array, fileName) => (
-  array[0].split(',').length === 5 && fileName.match(/app data/)
+  array[0].split(',').length === 5 && fileName.match(/app data/) !== null
 )
 
 const roundFloat = (float) => parseFloat(float).toFixed(2)
@@ -16,6 +16,7 @@ export const toCsv = (data) => {
     acc.push(buildRegularHoursLine(emp)) // add regular hours line
     if (hasOt(emp)) { acc.push(buildOtLine(emp)) } // check for and add overtime
     if (hasSoh(emp)) { acc.push(buildSohLine(emp)) } // check for and add spread of hours
+    if (hasCalnp(emp)) { buildCalnpLines(emp).map(line => acc.push(line)) }
     return acc
   }, [])
   const header = 'data:text/csv;charset=utf-8,'
@@ -43,9 +44,20 @@ export const hasSoh = (emp) => (
 )
 
 export const buildSohLine = (emp) => (
-  `${emp.employeeId},E,SOH,${roundFloat(emp.spreadOfHours)}`
+  `${emp.employeeId},E,SOHBN,${roundFloat(emp.spreadOfHours)}`
 )
 
 export const buildRegularHoursLine = (emp) => (
   `${emp.employeeId},E,REG,${roundFloat(emp.regularHours)}`
+)
+
+export const hasCalnp = (emp) => emp.callInPay !== undefined && emp.callInPay.length > 0
+
+export const buildCalnpLines = (emp) => (
+  emp.callInPay.reduce((acc, curr) => {
+    acc.push(
+      `${emp.employeeId},E,CALNP,${roundFloat(emp.regularHours)},${curr}`
+    )
+    return acc
+  }, [])
 )
