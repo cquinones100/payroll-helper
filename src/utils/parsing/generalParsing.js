@@ -10,25 +10,44 @@ export const isEmployeeData = (array, fileName) => {
           /app data/.exec(fileName) !== null
 }
 
+const roundFloat = (float) => parseFloat(float).toFixed(2)
+
 export const toCsv = (data) => {
-  const roundFloat = (float) => parseFloat(float).toFixed(2)
   const arr = Object.keys(data.employees).reduce((acc, curr) => {
-    acc.push(
-      `${data.employees[curr].employeeId},E,REG,${roundFloat(data.employees[curr].regularHours)}`
-    )
-    if (data.employees[curr].otHours !== '0.0' &&
-        data.employees[curr].otHours !== undefined
-    ) {
-      acc.push(
-        `${data.employees[curr].employeeId},E,OT,${roundFloat(data.employees[curr].otHours)}`
-      )
-    }
+    const emp = data.employees[curr]
+    acc.push(buildRegularHoursLine(emp)) // add regular hours line
+    if (hasOt(emp)) { acc.push(buildOtLine(emp)) } // check for and add overtime
+    if (hasSoh(emp)) { acc.push(buildSohLine(emp)) } // check for and add spread of hours
     return acc
   }, [])
-  const header = "data:text/csv;charset=utf-8,"
+  const header = 'data:text/csv;charset=utf-8,'
   return header + arr.join('\r\n')
 }
 
 export const isADuplicateLocation = (newData, currentData) => (
   currentData.find(data => data.location === newData.location) !== undefined
+)
+
+export const buildOtLine = (emp) => (
+  `${emp.employeeId},E,OT,${roundFloat(emp.otHours)}`
+)
+
+export const hasOt = (emp) => (
+  emp.otHours !== '0.0' &&
+  emp.otHours !== undefined &&
+  emp.otHours !== 0.0
+)
+
+export const hasSoh = (emp) => (
+  emp.spreadOfHours !== '0.0' &&
+  emp.spreadOfHours !== undefined &&
+  emp.spreadOfHours !== 0.0
+)
+
+export const buildSohLine = (emp) => (
+  `${emp.employeeId},E,SOH,${roundFloat(emp.spreadOfHours)}`
+)
+
+export const buildRegularHoursLine = (emp) => (
+  `${emp.employeeId},E,REG,${roundFloat(emp.regularHours)}`
 )
