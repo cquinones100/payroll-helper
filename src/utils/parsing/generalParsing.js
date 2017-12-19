@@ -16,7 +16,6 @@ export const toCsv = (data) => {
     acc.push(buildRegularHoursLine(emp)) // add regular hours line
     if (hasOt(emp)) { acc.push(buildOtLine(emp)) } // check for and add overtime
     if (hasSoh(emp)) {
-      debugger
       acc.push(buildSohLine(emp))
     } // check for and add spread of hours
     if (hasCalnp(emp)) { buildCalnpLines(emp).map(line => acc.push(line)) }
