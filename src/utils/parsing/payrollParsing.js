@@ -94,6 +94,22 @@ export const parseTimeCard = (data, employeeData) => {
         dataObj.employees[name].rate = newRow[15]
       }
     }
+    if (isSpreadOfHours(hours)) { applySoh(dataObj.employees, name, hours) }
   })
   return dataObj
+}
+
+export const isSpreadOfHours = (hours) => parseFloat(hours) > 10.0
+
+export const applySoh = (employees, name, hours) => {
+  const spreadOfHours = parseFloat(hours) - 10.0
+
+  return {
+    ...employees,
+    [name]: {
+      ...employees[name],
+      regularHours: parseFloat(employees[name].regularHours) - spreadOfHours,
+      spreadOfHours: spreadOfHours
+    }
+  }
 }

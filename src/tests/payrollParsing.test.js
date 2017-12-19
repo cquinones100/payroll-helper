@@ -109,6 +109,51 @@ it('gets a name from the row', () => {
   expect(parsing.getNameFromRow(row)).toEqual('Smith, John')
 })
 
+describe('spread of hours', () => {
+  it('can tell when there is spread of hours needed', () => {
+    expect(parsing.isSpreadOfHours(11.0)).toEqual(true)
+  })
+
+  it('applies spread of hours to an employee\'s data', () => {
+    const employees = {
+      'Smith, John': {
+        name: 'Smith, John',
+        regularHours: 40.0,
+        employeeId: '11111',
+        otHours: 1.0
+      },
+      'Smith, Jane': {
+        name: 'Smith, Jane',
+        regularHours: 11.0,
+        employeeId: '11112',
+        otHours: 0.0
+      }
+    }
+
+    const expectedEmployees = {
+      'Smith, John': {
+        name: 'Smith, John',
+        regularHours: 40.0,
+        employeeId: '11111',
+        otHours: 1.0
+      },
+      'Smith, Jane': {
+        name: 'Smith, Jane',
+        regularHours: 10.0,
+        spreadOfHours: 1,
+        employeeId: '11112',
+        otHours: 0.0
+      }
+    }
+
+    const name = 'Smith, Jane'
+    const hours = '11.0'
+
+    expect(parsing.applySoh(employees, name, hours)).toEqual(expectedEmployees)
+  })
+})
+
+
 describe('parsing time card', () => {
   const data = [
     "Employee Timecard,,,,,,,,,,,,,Store 1,,,,,,,",
