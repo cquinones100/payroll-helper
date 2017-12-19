@@ -65,12 +65,13 @@ describe('add new employee', () => {
     }
     const name = 'Smith, Jane'
 
+    const id = '11112'
     const employeeData = [
       'JOHN,SMITH,11111,200000,Store 1',
       'JANE,SMITH,11112,200000,Store 1'
     ]
 
-    expect(parsing.addNewEmployee(employees, employeeData, name)).toEqual(
+    expect(parsing.addNewEmployee(employees, employeeData, name, id)).toEqual(
       {
         'Smith, John': {
           name: 'Smith, John',
@@ -219,5 +220,13 @@ describe('parsing time card', () => {
 
   it('gets its pay period', () => {
     expect(parsing.getPayPeriodFromTimeCard(data[1])).toEqual('9/18/2017 - 9/24/2017')
+  })
+
+  it('gets an employee id from row', () => {
+    const row = [
+      '', "'Smith", " John'",
+      '', '', '', '20287',
+      '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+    expect(parsing.getIdFromRow(row)).toEqual('20287')
   })
 })

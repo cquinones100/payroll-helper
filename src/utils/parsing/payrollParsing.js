@@ -30,17 +30,10 @@ export function applyEmployeeHours (employees, hours, name) {
   return employees
 }
 
-export function addNewEmployee(employees, employeeData, name) {
-  let employeeId
-  try {
-    employeeId = getEmployeeIdByName(name, employeeData)
-  } catch (e) {
-    console.log(e)
-    employeeId = 'employee not found'
-  }
+export function addNewEmployee(employees, employeeData, name, id) {
   employees[name] = {
     name: name,
-    employeeId: employeeId,
+    employeeId: id,
     regularHours: 0.0,
     otHours: 0.0
   }
@@ -79,6 +72,7 @@ export const parseTimeCard = (data, employeeData) => {
     needsTipSheet: true
   }
   let name = ''
+  let id = ''
   data.slice(2, data.length - 1).forEach((row, index) => {
     const newRow = row.split(',')
     const hours = newRow[11]
@@ -86,7 +80,8 @@ export const parseTimeCard = (data, employeeData) => {
     let employees = dataObj.employees
     if (isANewEmployee(newRow)) {
       name = getNameFromRow(newRow)
-      employees = addNewEmployee(employees, employeeData, name)
+      id = getIdFromRow(newRow)
+      employees = addNewEmployee(employees, employeeData, name, id)
       if (isSpreadOfHours(hours)) { employees = applySoh(employees, name, hours) }
       if (isCallInPay(hours, calnpMax)) {
         employees = applyCallInPay(employees, name, newRow)
@@ -140,3 +135,5 @@ export const applyCallInPay = (employees, name, row) => {
     }
   }
 }
+
+export const getIdFromRow = (row) => row[6]
