@@ -46,31 +46,27 @@ class App extends Component {
       this.props.addEmployeeData(lines)
       alert('employee data added')
     } else if (generalParsing.isATimeCard(lines)) {
-
       if (this.props.employeeData.data.length > 0) {
-        const laborData = payrollParsing
-                          .parseTimeCard(lines, this.props.employeeData.data)
         const promptSpreadOfHours = () => {
           const spreadOfHours = prompt('Please enter the call in pay maximum for this location')
           if (spreadOfHours === null) {
             return promptSpreadOfHours()
           }
-          return spreadOfHours
-        }
-
-        if (generalParsing
-            .isADuplicateLocation(laborData, this.props.laborData.data)
-          ) {
-            if (window.confirm(
-              'this appears to be a duplicate location, do you want to overwrite the existing?')
-            ) {
+          const laborData = payrollParsing
+                            .parseTimeCard(lines, this.props.employeeData.data, spreadOfHours)
+          if (generalParsing
+              .isADuplicateLocation(laborData, this.props.laborData.data)) {
+            if (window.confirm('this appears to be a duplicate location, do you want to overwrite the existing?')) {
               this.props.removeLaborDataByLocation(laborData.location)
             } else {
               return alert('writing skipped')
             }
           }
-        this.props.addLaborData(laborData, promptSpreadOfHours())
-        return alert('labor data added')
+          console.log(spreadOfHours)
+          this.props.addLaborData(laborData, spreadOfHours)
+          return alert('labor data added')
+        }
+        promptSpreadOfHours()
       } else {
         return alert('please upload employee data first')
       }

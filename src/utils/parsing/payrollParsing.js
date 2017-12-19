@@ -61,15 +61,16 @@ const isAnEmployeeRow = (row) => (
   row[11] !== ''
 )
 
-export const parseTimeCard = (data, employeeData) => {
+export const parseTimeCard = (data, employeeData, calnp) => {
   const location = getLocationFromTimeCard(data[0])
   const payPeriod = getPayPeriodFromTimeCard(data[1])
-  const calnpMax = data.calnp
+  const calnpMax = calnp
   let dataObj = {
     location: location,
     payPeriod: payPeriod,
     employees: {},
-    needsTipSheet: true
+    needsTipSheet: true,
+    calnpMax: calnp
   }
   let name = ''
   let id = ''
@@ -90,6 +91,7 @@ export const parseTimeCard = (data, employeeData) => {
       employees = applyEmployeeHours(employees, hours, name)
       if (!employees[name].rate) { emp.rate = newRow[15] }
       if (isSpreadOfHours(hours)) { employees = applySoh(employees, name, hours) }
+      if (hours < 4 ) { debugger }
       if (isCallInPay(hours, calnpMax)) {
         employees = applyCallInPay(employees, name, newRow)
       }
