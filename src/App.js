@@ -7,6 +7,7 @@ import * as laborDataActions from './actions/laborDataActions'
 import * as generalParsing from './utils/parsing/generalParsing'
 import * as viewsActions from './actions/viewsActions'
 import * as views from './constants/viewTypes'
+import * as payrollParsing from './utils/parsing/payrollParsing'
 import EmployeeDataTable from './components/EmployeeDataTable'
 import Upload from './components/Upload'
 import LaborDataMenu from './components/LaborDataMenu'
@@ -31,6 +32,10 @@ class App extends Component {
     }
   }
 
+  laborUploadOnClick = (event) => {
+    debugger
+  }
+
   buttonOnClick = (event) => {
     document.querySelector('#file-upload').click()
   }
@@ -41,29 +46,47 @@ class App extends Component {
       this.props.addEmployeeData(lines)
       alert('employee data added')
     } else if (generalParsing.isATimeCard(lines)) {
+
       if (this.props.employeeData.data.length > 0) {
-        const laborData = generalParsing.parseTimeCard(lines, this.props.employeeData.data)
+        const laborData = payrollParsing
+                          .parseTimeCard(lines, this.props.employeeData.data)
+        if (generalParsing
+            .isADuplicateLocation(laborData, this.props.laborData.data)
+          ) {
+            if (window.confirm(
+              'this appears to be a duplicate location, do you want to overwrite the existing?')
+            ) {
+              this.props.removeLaborDataByLocation(laborData.location)
+            } else {
+              return alert('writing skipped')
+            }
+          }
         this.props.addLaborData(laborData)
-        alert('labor data added')
+        return alert('labor data added')
       } else {
-        alert('please upload employee data first')
+        return alert('please upload employee data first')
       }
     } else {
-      alert('file not recognized')
+      return alert('file not recognized')
     }
   }
 
   laborOnClick = (event) => {
     const data = this.props.laborData.data[event.target.id]
-    const csv = generalParsing.toCsv(data)
-    const location = data.location
-    const payPeriod = data.payPeriod
-    var encodedUri = encodeURI(csv)
-    var link = document.createElement("a")
-    link.setAttribute("href", encodedUri)
-    link.setAttribute("download", `${location}-${payPeriod}.csv`)
-    document.body.appendChild(link)
-    link.click();
+    if (data.needsTipSheet === true) {
+
+    }
+    if (window.confirm('this location may need a tip sheet, do you still wish to download?')) {
+      const csv = generalParsing.toCsv(data)
+      const location = data.location
+      const payPeriod = data.payPeriod
+      var encodedUri = encodeURI(csv)
+      var link = document.createElement("a")
+      link.setAttribute("href", encodedUri)
+      link.setAttribute("download", `${location}-${payPeriod}.csv`)
+      document.body.appendChild(link)
+      link.click();
+    }
   }
 
   render() {
@@ -85,7 +108,11 @@ class App extends Component {
       ? (
         <div style={{width: '400px', height: '100%'}}>
           <EmployeeDataTable data={this.props.employeeData.data} />
-          <LaborDataMenu data={this.props.laborData.data} onClick={this.laborOnClick}/>
+          <LaborDataMenu
+            data={this.props.laborData.data}
+            onClick={this.laborOnClick}
+            uploadOnClick={this.laborUploadOnClick}
+          />
         </div>
       )
       : ''}
@@ -110,7 +137,8 @@ const mapDispatchToProps = (dispatch) => {
     addUploadedFile: generalActions.addUploadedFile,
     addLaborData: laborDataActions.addLaborData,
     changeView: viewsActions.changeView,
-    clearData: generalActions.clearData
+    clearData: generalActions.clearData,
+    removeLaborDataByLocation: laborDataActions.removeLaborDataByLocation
   }, dispatch)
 }
 
