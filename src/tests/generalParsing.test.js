@@ -35,38 +35,19 @@ describe('generalParsing', () => {
     expect(parsing.isEmployeeData(data, fileName)).toEqual(true)
     expect(parsing.isEmployeeData(badData, fileName)).toEqual(false)
   })
-})
 
-describe('parsing time card', () => {
-  const data = [
-    "Employee Timecard,,,,,,,,,,,,,Store 1,,,,,,,",
-    "9/25/2017 2:22:12 PM (UTC-05:00) Eastern Time (US & Canada),,,,,,,,,,,,,9/18/2017 - 9/24/2017,,,,,,,",
-    "Employe Name,,,,,Payroll ID,,,,,,,,,,,,,,,", ",'Smith, John',,,,11111,,,,,,,,,,,,,,,",
-    "Date,,Job,Time In,Time Out,,,Regular,OT,Ext,,Total…eaks,Rate,Total Pay,,Non-Cash Tips,,Declared Tips",
-    "9/18/2017,,FOH Counter,9:30 AM,5:30 PM,,,8,0,0,,8,0,,0,$12.50 ,$100.00 ,,$0.00 ,,$4.00 ",
-    "9/22/2017,,FOH Counter,9:33 AM,4:56 PM,,,7.38,0,0,,7.38,0,,0,$12.50 ,$92.25 ,,$0.00 ,,$9.00 ",
-    "Totals:,,,,,,,15.38,0,0,,15.38,0,,0,$192.25 ,,,$0.00 ,,$13.00 ", ",Signature,,,,,Date,,,,Signature,,,,,,,,,Date,",
-    "Employe Name,,,,,Payroll ID,,,,,,,,,,,,,,,",
-    ",'Smith, Jane',,,,20400,,,,,,,,,,,,,,,",
-  ]
+  it('checks for duplicate files', () => {
+    const data = [{
+      location: 'Store 1'
+    }]
 
-  it('gets its location', () => {
-    expect(parsing.getLocationFromTimeCard(data[0])).toEqual('Store 1')
-  })
+    const newData = {
+      location: 'Store 1'
+    }
 
-  it('gets its pay period', () => {
-    expect(parsing.getPayPeriodFromTimeCard(data[1])).toEqual('9/18/2017 - 9/24/2017')
-  })
-
-  it('finds an employee id by name', () => {
-    const employeeData = [
-      'JOHN,SMITH,11111,200000,Store 1',
-      'JIMMY,SMITH,11112,200000,Store 1'
-    ]
-
-    const name = 'Smith, John'
-
-    expect(parsing.getEmployeeIdByName(name, employeeData)).toEqual('11111')
+    expect(parsing.isADuplicateLocation(
+      newData, data
+    )).toEqual(true)
   })
 
   it('converts to CSV', () => {
