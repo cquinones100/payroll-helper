@@ -51,7 +51,7 @@ class App extends Component {
         const laborData = payrollParsing
                           .parseTimeCard(lines, this.props.employeeData.data)
         const promptSpreadOfHours = () => {
-          const spreadOfHours = prompt('Please enter the spread of hours minimum for this location')
+          const spreadOfHours = prompt('Please enter the call in pay maximum for this location')
           if (spreadOfHours === null) {
             return promptSpreadOfHours()
           }

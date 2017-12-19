@@ -139,7 +139,7 @@ describe('spread of hours', () => {
       },
       'Smith, Jane': {
         name: 'Smith, Jane',
-        regularHours: 10.0,
+        regularHours: 11.0,
         spreadOfHours: 1,
         employeeId: '11112',
         otHours: 0.0

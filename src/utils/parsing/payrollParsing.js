@@ -72,7 +72,7 @@ export const parseTimeCard = (data, employeeData) => {
   const location = getLocationFromTimeCard(data[0])
   const payPeriod = getPayPeriodFromTimeCard(data[1])
   const calnpMax = data.calnp
-  const dataObj = {
+  let dataObj = {
     location: location,
     payPeriod: payPeriod,
     employees: {},
@@ -82,22 +82,22 @@ export const parseTimeCard = (data, employeeData) => {
   data.slice(2, data.length - 1).forEach((row, index) => {
     const newRow = row.split(',')
     const hours = newRow[11]
+    const emp = dataObj.employees[name]
+    let employees = dataObj.employees
     if (isANewEmployee(newRow)) {
       name = getNameFromRow(newRow)
-      dataObj.employees = addNewEmployee(
-        dataObj.employees, employeeData, name
-      )
+      employees = addNewEmployee(employees, employeeData, name)
     } else if (isAnEmployeeRow(newRow)) {
-      dataObj.employees = applyEmployeeHours(
-        dataObj.employees, hours, name
-      )
-      if (!dataObj.employees[name].rate) {
-        dataObj.employees[name].rate = newRow[15]
-      }
+      employees = applyEmployeeHours(employees, hours, name)
+      if (!employees[name].rate) { emp.rate = newRow[15] }
     }
-    if (isSpreadOfHours(hours)) { applySoh(dataObj.employees, name, hours) }
+    if (isSpreadOfHours(hours)) { employees = applySoh(employees, name, hours) }
     if (isCallInPay(hours, calnpMax)) {
-      applyCallInPay(dataObj.employees, name, newRow)
+      employees = applyCallInPay(employees, name, newRow)
+    }
+    dataObj = {
+      ...dataObj,
+      employees: employees
     }
   })
   return dataObj
@@ -106,13 +106,13 @@ export const parseTimeCard = (data, employeeData) => {
 export const isSpreadOfHours = (hours) => parseFloat(hours) > 10.0
 
 export const applySoh = (employees, name, hours) => {
-  const spreadOfHours = parseFloat(hours) - 10.0
-
+  const spreadOfHours = employees[name].spreadOfHours === undefined
+                        ? 1 : employees[name].spreadOfHours += 1
   return {
     ...employees,
     [name]: {
       ...employees[name],
-      regularHours: parseFloat(employees[name].regularHours) - spreadOfHours,
+      regularHours: parseFloat(employees[name].regularHours),
       spreadOfHours: spreadOfHours
     }
   }
