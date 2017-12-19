@@ -4,11 +4,9 @@ export const isATimeCard = (lines) => (
   lines[0].split(',')[0] === 'Employee Timecard'
 )
 
-export const isEmployeeData = (array, fileName) => {
-  return array.filter(line => line.split(',').length === 5)
-          .length === array.length - 1 &&
-          /app data/.exec(fileName) !== null
-}
+export const isEmployeeData = (array, fileName) => (
+  array[0].split(',').length === 5 && fileName.match(/app data/)
+)
 
 const roundFloat = (float) => parseFloat(float).toFixed(2)
 
