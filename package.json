@@ -6,6 +6,7 @@
     "file-system": "^2.2.2",
     "jest-enzyme": "^4.0.1",
     "react": "^16.2.0",
+    "react-bootstrap": "^0.32.4",
     "react-dom": "^16.2.0",
     "react-fontawesome": "^1.6.1",
     "react-redux": "^5.0.6",

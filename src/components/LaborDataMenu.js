@@ -1,5 +1,4 @@
 import React from 'react'
-import './EmployeeDataTable.css'
 import FontAwesome from 'react-fontawesome'
 
 export default function LaborDataMenu (props) {
@@ -10,21 +9,21 @@ export default function LaborDataMenu (props) {
           {curr.location}
         </div>
         {curr.needsTipSheet === true
-        ? (
-          <div
-            style={{display: 'inline-block', float: 'right'}}
-            onClick={props.uploadOnClick}
-            >
-            <FontAwesome
-              name='cloud-upload'
-            />
+            ? (
+              <div
+                style={{display: 'inline-block', float: 'right'}}
+                onClick={props.uploadOnClick}
+              >
+                <FontAwesome
+                  name='cloud-upload'
+                />
+              </div>
+            ) : (
+              <FontAwesome
+                name='check'
+              />
+            )}
           </div>
-        ) : (
-          <FontAwesome
-            name='check'
-           />
-        )}
-      </div>
     )
     return acc
   }, [])
