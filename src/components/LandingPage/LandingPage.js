@@ -33,10 +33,12 @@ class LandingPage extends Component {
   componentDidMount() {
     const employeeData = localStorage.getItem('employeeData')
     const locationData = localStorage.getItem('locationData')
+    const regions = localStorage.getItem('regions')
 
     this.setState({
       employeeData: employeeData ? JSON.parse(employeeData) : null,
-      locationData: locationData ? JSON.parse(locationData) : null
+      locationData: locationData ? JSON.parse(locationData) : null,
+      regions: regions ? JSON.parse(regions) : null
     })
   }
 
@@ -140,7 +142,8 @@ class LandingPage extends Component {
   clearData() {
     this.setState({
       employeeData: null,
-      locationData: null
+      locationData: null,
+      regions: null
     }, () => {
       localStorage.clear()
     })
@@ -152,6 +155,45 @@ class LandingPage extends Component {
 
   handleHideLocationForm() {
     this.setState({ selectedLocation: null })
+  }
+
+  addRegion(region) {
+    const { regions } = this.state
+
+    if (regions === null) {
+      this.setState({
+        regions: [region]
+      }, () => {
+        localStorage.setItem('regions', JSON.stringify(this.state.regions))
+      })
+    } else if (!regions.find(reg => reg.name === region.name)) {
+      this.setState({
+        regions: regions !== null ? regions.concat(region) : [region]
+      }, () => {
+        localStorage.setItem('regions', JSON.stringify(this.state.regions))
+      })
+    }
+  }
+
+  assignRegion(region, location) {
+    const { locationData } = this.state
+
+    this.setState({
+      locationData: locationData.reduce((acc, curr) => {
+        if (curr.name === location.name) {
+          acc.push({
+            ...curr, 
+            region
+          })
+        } else {
+          acc.push(curr)
+        }
+
+        return acc
+      }, [])
+    }, () => {
+      localStorage.setItem('locationData', JSON.stringify(this.state.locationData))
+    })
   }
 
   render() {
@@ -224,6 +266,9 @@ class LandingPage extends Component {
             onHide={() => this.handleHideLocationForm()} 
             location={selectedLocation}
             regions={regions}
+            addRegion={region => this.addRegion(region)}
+            assignRegion={(region, location) => this.assignRegion(region, location)}
+            employeeData={employeeData}
           />
         ) }
       </Grid>

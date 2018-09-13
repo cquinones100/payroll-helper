@@ -6,9 +6,7 @@ class RegionDataAttributeForm extends Component {
   render() {
     const { 
       attribute,
-      codeName,
       codeValue,
-      numeric,
       numericValue,
       numericMessage,
       participates,
@@ -54,6 +52,7 @@ class RegionDataAttributeForm extends Component {
               </p>
               <FormControl
                 type='number'
+                placeholder='Enter a Number'
                 value={numericValue === null ? '' : numericValue}
                 onChange={handleNumericOnChange}
               />
