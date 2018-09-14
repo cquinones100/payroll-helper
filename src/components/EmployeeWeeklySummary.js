@@ -18,27 +18,15 @@ const EmployeeWeeklySummary = ({ data }) => (
       <tbody>
         {
           data.map((employee, index) => {
-            const { name, payrollId, workDays } = employee
-
-            const jobs = workDays.reduce((acc, curr, index) => {
-              if (acc.indexOf(curr.job) === -1) {
-                return acc += `${index > 0 ? ', ' : ''}${curr.job}`
-              } else {
-                return acc
-              }
-            }, '')
-
-            const regularHours = workDays.reduce((acc, curr) => {
-              return acc += parseInt(curr.regularHours, 10)
-            }, 0)
-
-            const overTimeHours = workDays.reduce((acc, curr) => {
-              return acc += parseInt(curr.overTimeHours, 10)
-            }, 0)
-
-            const totalHours = workDays.reduce((acc, curr) => {
-              return acc += parseInt(curr.totalHours, 10)
-            }, 0)
+            const { 
+              name, 
+              payrollId, 
+              workDays, 
+              jobs, 
+              overTimeHours, 
+              regularHours, 
+              totalHours 
+            } = employee
 
             return (
               <tr key={index}>

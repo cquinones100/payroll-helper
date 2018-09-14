@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import CenteredParagraph from './CenteredParagraph'
-import { Modal, Alert, Button, Well, ButtonToolbar, FormControl } from 'react-bootstrap'
+import { Modal, Alert, Button, Well, Col } from 'react-bootstrap'
 import AddARegionForm from './AddARegionForm'
 import AssignRegionForm from './AssignRegionForm'
 import RegionDataAttributeForm from './RegionDataAttributeForm'
@@ -27,13 +27,25 @@ class LocationInformationForm extends Component {
 
     const needsRegionInformation = !regions || regions.length === 0
 
+    const shouldRenderLocationSummary = !needsRegionInformation && location && location.region
+
     return(
       <Modal show onHide={onHide}>
         { 
           location && (
             <div>
               <Modal.Header>
-                {location.name}
+                <Col xs={10}>
+                  {location.name}
+                </Col>
+                <Col xs={2}>
+                  { shouldRenderLocationSummary && (
+                    <Button bsStyle='primary'>
+                      Download Report
+                    </Button>
+
+                  )}
+                </Col>
               </Modal.Header>
               <Modal.Body>
                 { 
@@ -52,7 +64,7 @@ class LocationInformationForm extends Component {
                   )
                 }
                 {
-                  !needsRegionInformation && location && location.region && (
+                  shouldRenderLocationSummary && (
                     <LocationSummary location={location} employeeData={employeeData}/>
                   )
                 }

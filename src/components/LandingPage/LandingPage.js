@@ -86,11 +86,18 @@ class LandingPage extends Component {
               this.setState({ processing: false })
             })
           } else if (response.status === 200) {
-            const { locationData } = this.state
+            const { locationData:oldLocationData } = this.state
             const { location } = response
+            const locationData = oldLocationData ? oldLocationData : [] 
 
             this.setState({ 
-              locationData: locationData ? locationData.concat(location) : [location] 
+              locationData: locationData.reduce((acc, loc) => {
+                if (loc.name !== location.name) {
+                  acc.push(loc)
+                }
+
+                return acc
+              }, []).concat(location)
             }, () => {
               const { locationData } = this.state
 
@@ -153,8 +160,8 @@ class LandingPage extends Component {
     this.setState({ selectedLocation })
   }
 
-  handleHideLocationForm() {
-    this.setState({ selectedLocation: null })
+  handleHideLocationForm(cb = () => null) {
+    this.setState({ selectedLocation: null }, () => cb())
   }
 
   addRegion(region) {
@@ -192,7 +199,13 @@ class LandingPage extends Component {
         return acc
       }, [])
     }, () => {
-      localStorage.setItem('locationData', JSON.stringify(this.state.locationData))
+      const { locationData } = this.state
+
+      this.handleHideLocationForm(() => {
+        this.handleLocationOnClick(locationData.find(loc => location.name === loc.name))
+      })
+
+      localStorage.setItem('locationData', JSON.stringify(locationData))
     })
   }
 

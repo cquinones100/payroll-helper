@@ -56,12 +56,160 @@ class EmployeeDataProcessor extends Component {
     }
   }
 
-  render() {
+  floatingPointValue(value) {
+    return parseFloat(value).toPrecision(4)
+  }
 
+  dollarValueFromRow(value) {
+    return this.floatingPointValue(value.replace('$', ''))
+  }
+
+  timeValueFromRow(value) {
+    // value.replace(/(\d{2,}\/){2,}\d{4}\s/, '')
+    return value
+  }
+
+  rateFromRow(row) {
+    return this.dollarValueFromRow(this.attributeFromRow('rate', row))
+  }
+
+  timeInFromRow(row) {
+    return this.timeValueFromRow(this.attributeFromRow('timeIn', row))
+  }
+
+  timeOutFromRow(row) {
+    return this.timeValueFromRow(this.attributeFromRow('timeOut', row))
+  }
+
+  totalPayFromRow(row) {
+    return this.dollarValueFromRow(this.attributeFromRow('totalPay', row))
+  }
+
+  totalHoursFromRow(row) {
+    return this.floatingPointValue(this.attributeFromRow('totalHours', row))
+  }
+
+  nonCashTipsFromRow(row) {
+    return this.dollarValueFromRow(this.attributeFromRow('nonCashTips', row))
+  }
+
+  regularHoursFromRow(row) {
+    return this.floatingPointValue(this.attributeFromRow('regularHours', row))
+  }
+
+  overTimeHoursFromRow(row) {
+    return this.floatingPointValue(this.attributeFromRow('overTimeHours', row))
+  }
+
+  paidBreaksFromRow(row) {
+    return this.floatingPointValue(this.attributeFromRow('paidBreaks', row))
+  }
+
+  extHoursFromRow(row) {
+    return this.floatingPointValue(this.attributeFromRow('extHours', row))
+  }
+
+  declaredTipsFromRow(row) {
+    return this.dollarValueFromRow(this.attributeFromRow('declaredTips', row))
+  }
+
+  initialRowData(row) {
+    const { sohHours, callInPayHours } = this.props.location.region
+
+    const isSoh = parseFloat(this.attributeFromRow('totalHours', row)) > parseFloat(sohHours)
+    const isCallInPay = parseFloat(this.attributeFromRow('totalHours', row)) < parseFloat(callInPayHours)
+
+    return ({
+      date: this.dateFromRow(row),
+      isSoh,
+      isCallInPay
+    })
+  }
+
+  completeRowData(acc, row) {
+    const attributes = [
+      'job', 'timeIn', 'timeOut', 'regularHours', 'overTimeHours', 'extHours', 
+      'totalHours', 'paidBreaks', 'rate', 'totalPay', 'nonCashTips', 'declaredTips'
+    ]
+
+    const workDay = attributes.reduce((acc, attribute) => {
+      if (this[`${attribute}FromRow`]) {
+        acc[attribute] = this[`${attribute}FromRow`](row)
+      } else {
+        acc[attribute] = this.attributeFromRow(attribute, row)
+      }
+
+      return acc
+    }, this.initialRowData(row))
+
+    acc[acc.length - 1].workDays.push(workDay)
+
+    return acc
+  }
+
+  completeEmployeeData(employees) {
+    const employee = employees[employees.length - 1]
+    const { workDays } = employee
+
+    const totalHours = workDays.reduce((acc, day) => {
+      return acc += parseFloat(day.totalHours)
+    }, 0).toPrecision(4)
+
+    const jobs = workDays.reduce((acc, curr, index) => {
+      if (acc.indexOf(curr.job) === -1) {
+        return acc += `${index > 0 ? ', ' : ''}${curr.job}`
+      } else {
+        return acc
+      }
+    }, '')
+
+    const overTimeHours = totalHours - 40 > 0 ? totalHours - 40 : 0
+
+    const newEmployee = {
+      ...employee,
+      overTimeHours,
+      totalHours,
+      regularHours: overTimeHours ? 40 : totalHours,
+      jobs
+    }
+
+    return employees.slice(0, employees.length - 1).concat(newEmployee)
+  }
+
+  sohEmployees(data) {
+    return data.reduce((acc,employee) => {
+      employee.workDays.forEach(day => {
+        if (day.isSoh) {
+          acc.push({ name: employee.name, ...day})
+        }
+      })
+
+      return acc
+    }, [])
+  }
+
+  overTimeEmployees(data) {
+    return data.filter(employee => employee.workDays.find(day => (
+      day.overTimeHours && day.overTimeHours > 0
+    )))
+  }
+
+  callInPayEmployees(data) {
+    return data.reduce((acc,employee) => {
+      employee.workDays.forEach(day => {
+        if (day.isCallInPay) {
+          acc.push({ name: employee.name, ...day})
+        }
+      })
+
+      return acc
+    }, [])
+  }
+
+  render() {
     const { location, employeeData, render } = this.props 
     const { region, rawRows:locationRows } = location
     const {
-      sohHours,
       sohCode,
       callInPayHours,
       callInPayCode,
@@ -72,42 +220,36 @@ class EmployeeDataProcessor extends Component {
     const parsedData = locationRows.reduce((acc, curr) => {
       const row = Papa.parse(curr).data[0]
       if (!row) { return acc }
+      if (parseFloat(this.attributeFromRow('totalHours', row)) === 0) { return acc }
 
       const name = this.employeeNameFromRow(row)
       const payrollId = this.payRollIdFromRow(row)
-      const date = acc.length > 0 ? this.dateFromRow(row) : undefined
+      const isAnEmployeeRow = acc.length > 0 ? this.dateFromRow(row) : undefined
 
-      const attributes = [
-        'job', 'timeIn', 'timeOut', 'regularHours', 'overTimeHours', 'extHours', 
-        'totalHours', 'paidBreaks', 'rate', 'totalPay', 'nonCashTips', 'declaredTips'
-      ]
 
       if (name && payrollId) { 
+        if (acc.length > 0) { acc = this.completeEmployeeData(acc) }
+
         acc.push({
           payrollId,
           name,
-          workDays: []
+          workDays: [],
         })
       } 
 
-      if (date) {
-        const workDay = attributes.reduce((acc, attribute) => {
-          if (this[`${attribute}FromRow`]) {
-            acc[attribute] = this[`${attribute}FromRow`](row)
-          } else {
-            acc[attribute] = this.attributeFromRow(attribute, row)
-          }
-
-          return acc
-        }, { date })
-
-        acc[acc.length - 1].workDays.push(workDay)
-      }
+      if (isAnEmployeeRow) { return this.completeRowData(acc, row) }
 
       return acc
     }, [])
 
-    return render({ data: parsedData }) 
+    const data = this.completeEmployeeData(parsedData)
+
+    return render({
+      data,
+      sohEmployees: this.sohEmployees(data),
+      overTimeEmployees: this.overTimeEmployees(data),
+      callInPayEmployees: this.callInPayEmployees(data),
+    }) 
   }
 }
 

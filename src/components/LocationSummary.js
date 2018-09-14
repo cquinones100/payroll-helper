@@ -2,6 +2,7 @@ import React from 'react'
 import { Alert, Button, Well, ListGroup, ListGroupItem, Row, Table, Col } from 'react-bootstrap'
 import EmployeeDataProcessor from './EmployeeDataProcessor'
 import EmployeeWeeklySummary from './EmployeeWeeklySummary'
+import LocationEmployeeAlerts from './LocationEmployeeAlerts'
 
 const RegionStatSummary = ({ stats, statName, numeric, codeName, requirement }) => (
   <tr>
@@ -35,21 +36,7 @@ const LocationSummary = ({ location, employeeData }) => {
     <EmployeeDataProcessor
       location={location}
       employeeData={employeeData}
-      render={({ data }) => {
-
-        const hasSohEmployees = data.find(employee => (
-          employee.workDays.find(day => parseInt(day.totalHours, 10) > sohHours)
-        ))
-
-        const hasOTEmployees = data.find(employee => (
-          employee.workDays.reduce((acc, curr) => {
-            return acc += parseInt(curr.totalHours, 10)
-          }, 0) > otHours
-        ))
-
-        const hasCallInPayEmployees = data.find(employee => (
-          employee.workDays.find(day => parseInt(day.totalHours, 10) < callInPayHours)
-        ))
+      render={({ data, sohEmployees, callInPayEmployees, overTimeEmployees }) => {
 
         return (
           <div>
@@ -111,23 +98,14 @@ const LocationSummary = ({ location, employeeData }) => {
                 </Well>
               </Col>
               <Col xs={8}>
-                <Well>
-                  {
-                    participatesInSoh && hasSohEmployees && (
-                      <div>Someone went into SOH</div>
-                    )
-                  }
-                  {
-                    participatesInOt && hasOTEmployees && (
-                      <div>Someone went into OT</div>
-                    )
-                  }
-                  {
-                    participatesInCallInPay && hasCallInPayEmployees && (
-                      <div>Someone went into Call in Pay</div>
-                    )
-                  }
-                </Well>
+                <LocationEmployeeAlerts 
+                  sohEmployees={sohEmployees}
+                  callInPayEmployees={callInPayEmployees}
+                  overTimeEmployees={overTimeEmployees}
+                  participatesInOt={participatesInOt}
+                  participatesInSoh={participatesInSoh}
+                  participatesInCallInPay={participatesInCallInPay}
+                />
               </Col>
             </Row>
             { data && <EmployeeWeeklySummary data={data} /> }
