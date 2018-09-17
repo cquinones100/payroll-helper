@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import CenteredParagraph from './CenteredParagraph'
-import { Modal, Alert, Button, Well, ButtonToolbar, FormControl } from 'react-bootstrap'
+import { Modal, Alert, Button, Well, FormControl } from 'react-bootstrap'
 import RegionDataAttributeForm from './RegionDataAttributeForm'
 
 class AddARegionForm extends Component {
@@ -131,7 +131,7 @@ class AddARegionForm extends Component {
     const canSubmit = canSubmitSection('soh') && canSubmitSection('ot') && canSubmitSection('callInPay') && name !== ''
 
     return (
-      <div>
+      <Modal show onHide={onHide}>
         { 
           (!regions || regions.length === 0) && (
             <Alert bsStyle='danger'>
@@ -211,7 +211,7 @@ class AddARegionForm extends Component {
             </Modal>
           ) 
         }
-      </div>
+      </Modal>
     )
   }
 }

@@ -7,9 +7,16 @@ const LocationEmployeeAlerts = ({
   overTimeEmployees,
   participatesInCallInPay,
   participatesInOt,
-  participatesInSoh
+  participatesInSoh,
+  data
 }) => {
-  if (sohEmployees.length > 0 || callInPayEmployees.length > 0 || overTimeEmployees.length > 0) {
+  const multipleJobsWorked = data.filter(employee => employee.jobs.split(',').length > 1)
+
+  if ((sohEmployees && sohEmployees.length > 0) || 
+    (callInPayEmployees && callInPayEmployees.length > 0) || 
+    (overTimeEmployees && overTimeEmployees.length > 0) ||
+    multipleJobsWorked.length > 0
+  ) {
     return (
       <Panel bsStyle="danger">
         <Panel.Heading>
@@ -43,6 +50,15 @@ const LocationEmployeeAlerts = ({
                   </ListGroupItem>
                 ))
               )
+            }
+            {
+              multipleJobsWorked.length > 0 && (
+                multipleJobsWorked.map((employee, index) => (
+                  <ListGroupItem key={index}>
+                    {employee.name} worked multiple jobs: {employee.jobs}
+                  </ListGroupItem>
+                ))
+              ) 
             }
           </ListGroup>
         </Panel.Body>

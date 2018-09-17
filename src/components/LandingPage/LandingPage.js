@@ -6,6 +6,7 @@ import EmployeeDataUploadButton from '../EmployeeDataUploadButton'
 import CenteredParagraph from '../CenteredParagraph'
 import EmployeeDataTable from '../EmployeeDataTable'
 import LocationInformationForm from '../LocationInformationForm'
+import AddARegionForm from '../AddARegionForm'
 
 const UploadEmployeeDataAlert = ({ onClick, employeeData, onUpload }) => (
   <Alert bsStyle='danger'>
@@ -150,7 +151,8 @@ class LandingPage extends Component {
     this.setState({
       employeeData: null,
       locationData: null,
-      regions: null
+      regions: null,
+      selectedLocation: null
     }, () => {
       localStorage.clear()
     })
@@ -207,6 +209,47 @@ class LandingPage extends Component {
 
       localStorage.setItem('locationData', JSON.stringify(locationData))
     })
+  }
+
+  addTipSheet(location) {
+    document.querySelector('#tipsheet-file-upload').click()
+  }
+
+  processLocationTipSheetData(tipSheet) {
+    const { locationData, selectedLocation } = this.state
+
+    this.setState({
+      locationData: locationData.reduce((acc, curr) => {
+        if (curr.name === selectedLocation.name) {
+          acc.push({
+            ...curr, 
+            tipSheet
+          })
+        } else {
+          acc.push(curr)
+        }
+
+        return acc
+      }, []),
+      selectedLocation:  {
+        ...selectedLocation,
+        tipSheet
+      }
+    }, () => {
+      const { locationData } = this.state
+
+      localStorage.setItem('locationData', JSON.stringify(locationData))
+    })
+  }
+
+  handleTipSheetUpload(e) {
+    e.preventDefault()
+
+    const { files } = e.target
+
+    this.readFile(files[0], 'LocationTipSheet')
+
+    document.querySelector('#tipsheet-file-upload').value = ''
   }
 
   render() {
@@ -274,19 +317,34 @@ class LandingPage extends Component {
             ) }
           </Col>
         </Row>
-        { selectedLocation && (
-          <LocationInformationForm 
-            onHide={() => this.handleHideLocationForm()} 
-            location={selectedLocation}
-            regions={regions}
-            addRegion={region => this.addRegion(region)}
-            assignRegion={(region, location) => this.assignRegion(region, location)}
-            employeeData={employeeData}
-          />
-        ) }
+        {
+          selectedLocation && (!regions || regions.length === 0) && (
+            <AddARegionForm 
+              regions={regions} 
+              onHide={() => this.handleHideLocationForm()}
+              addRegion={region => this.addRegion(region)}
+            />
+          )
+        }
+        {
+          selectedLocation && regions && regions.length > 0 && (
+            <LocationInformationForm 
+              onHide={() => this.handleHideLocationForm()} 
+              location={selectedLocation}
+              regions={regions}
+              addRegion={region => this.addRegion(region)}
+              handleTipSheetUpload={e => this.handleTipSheetUpload(e)}
+              uploadTipSheet={location => this.addTipSheet(location)}
+              assignRegion={(region, location) => this.assignRegion(region, location)}
+              employeeData={employeeData}
+            />
+          ) 
+        }
       </Grid>
     )
   }
 }
 
 export default LandingPage
+// { selectedLocation && (
+// ) }
