@@ -1,5 +1,7 @@
+import Papa from 'papaparse'
+
 const processEmployeeData = data => {
-  const employees = data.split('\n')
+  const employees = Papa.parse(data).data
 
   if (hasFailedValidation(employees)) { return error('Format is incorrect') }
 
@@ -7,8 +9,7 @@ const processEmployeeData = data => {
 }
 
 const parsedEmployees = employees => (
-  employees.reduce((acc, curr, index) => {
-    const employee = curr.split(',')
+  employees.reduce((acc, employee, index) => {
 
     if (index !== employees.length - 1) {
       acc.push({
@@ -32,7 +33,7 @@ const hasFailedValidation = data => (
 )
 
 const validateLengthOfEmployeeDataRows = rows => (
-  !rows.find(row => row !== '' && row.split(',').length !== 5)
+  !rows.find(row => row[0] !== '' && row.length !== 5)
 )
 
 const error = message => ({
