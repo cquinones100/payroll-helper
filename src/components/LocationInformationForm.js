@@ -3,7 +3,7 @@ import { Modal, Button, Col } from 'react-bootstrap'
 import AssignRegionForm from './AssignRegionForm'
 import LocationSummary from'./LocationSummary'
 import CsvBuilder from '../utils/CsvBuilder'
-import EmployeeDataProcessor from './EmployeeDataProcessor'
+import ParsedTimeCardProvider from './EmployeeDataProcessor'
 
 class LocationInformationForm extends Component {
   constructor(props) {
@@ -62,7 +62,7 @@ class LocationInformationForm extends Component {
     }
 
     return(
-      <EmployeeDataProcessor
+      <ParsedTimeCardProvider
         location={location}
         employeeData={employeeData}
         render={({ data, sohEmployees, overTimeEmployees, callInPayEmployees }) => {

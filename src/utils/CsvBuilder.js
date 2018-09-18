@@ -56,6 +56,24 @@ class CsvBuilder {
     }
   }
 
+  cctipLine(employee) {
+    const { cctip } = employee
+
+
+    if (this.categoryPresent(cctip)) {
+      return `${employee.payrollId},E,CCTIP,,${employee.tips}`
+    }
+  }
+
+  cashtLine(employee) {
+    const { casht } = employee
+
+
+    if (this.categoryPresent(casht)) {
+      return `${employee.payrollId},E,CASHT,,${employee.tips}`
+    }
+  }
+
   overTimeHoursLine(employee) {
     const { overTimeHours } = employee
     const { otCode } = this.location.region

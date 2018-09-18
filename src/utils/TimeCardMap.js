@@ -76,7 +76,7 @@ class TimeCardMap {
   }
 
   floatingPointValue(value) {
-    return parseFloat(value).toPrecision(4)
+    return parseFloat(value)
   }
 
   dollarValueFromRow(value) {

@@ -1,10 +1,10 @@
 import EmployeeRowParser from '../utils/EmployeeRowParser'
 
-const ParsedTimeCardProvider = ({ render, location }) => {
+const ParsedTimeCardProvider = ({ render, location, employeeData }) => {
   const { rawRows:rows } = location
 
   const data = rows.reduce((completedRows, row, index) => {
-    const parser = new EmployeeRowParser({ row, completedRows, index, rows, location })
+    const parser = new EmployeeRowParser({ row, completedRows, index, rows, location, employeeData })
 
     return parser.parse()
   }, [])

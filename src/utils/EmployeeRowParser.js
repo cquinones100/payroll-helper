@@ -2,7 +2,7 @@ import Papa from 'papaparse'
 import TimeCardMap from '../utils/TimeCardMap'
 
 class EmployeeRowParser {
-  constructor({ row, completedRows, index, rows, location }) {
+  constructor({ row, completedRows, index, rows, location, employeeData }) {
     this.completedRows = completedRows
     this.index = index
     this.location = location
@@ -15,7 +15,7 @@ class EmployeeRowParser {
     if (this.timeCardMap.isAValidRow) {
       this.totalHours = this.timeCardMap.totalHours
       this.name = this.timeCardMap.name
-      this.payrollId = this.timeCardMap.payrollId
+      this.payrollId = this.timeCardMap.payrollId || 'id not found'
       this.date = this.timeCardMap.date
 
       this.hasNoRecordedHours = parseFloat(this.totalHours === 0)
@@ -73,13 +73,27 @@ class EmployeeRowParser {
 
   calculateTips(tipSheet, employee) {
     if (tipSheet) {
-      const tipRow = Papa
+      const tipRows = Papa
         .parse(tipSheet)
         .data
-        .find(row => parseInt(row[1], 10) === parseInt(employee.payrollId, 10))
+        .filter(row => (
+          parseInt(row[1], 10) === parseInt(employee.payrollId, 10) || 
+          row[0].split(', ').reverse().join(' ') === employee.name
+        ))
 
-      if (tipRow) { return parseFloat(tipRow[5]).toPrecision(4) }
+      const cctip = tipRows.find(row => row[3].toLowerCase() === 'cctip')
+      const casht = tipRows.find(row => row[3].toLowerCase() === 'casht')
+
+      return ({
+        cctip: cctip ? parseFloat(cctip[5]) : 0,
+        casht: casht ? parseFloat(casht[5]) : 0
+      })
     }
+
+    return ({
+      cctip: 0,
+      casht: 0
+    })
   }
 
   completePreviousEmployeeData() {
@@ -91,7 +105,7 @@ class EmployeeRowParser {
 
     const totalHours = workDays.reduce((acc, day) => (
       acc += parseFloat(day.totalHours)
-    ), 0).toPrecision(4)
+    ), 0)
 
     const jobs = workDays.reduce((acc, curr, index) => {
       if (acc.indexOf(curr.job) === -1) {
@@ -109,13 +123,17 @@ class EmployeeRowParser {
       isCallInPay ? acc += 1 : acc
     ), 0)
 
+    const { cctip, casht } = this.calculateTips(tipSheet, employee)
+
     const completedEmployeeData =  {
       ...employee,
       overTimeHours,
       totalHours,
       regularHours: overTimeHours ? 40 : totalHours,
       jobs,
-      tips: this.calculateTips(tipSheet, employee),
+      tips: cctip,
+      cctip,
+      casht,
       sohHours,
       callInPayHours
     }
