@@ -10,7 +10,9 @@ const LocationEmployeeAlerts = ({
   participatesInSoh,
   data
 }) => {
-  const multipleJobsWorked = data.filter(employee => employee.jobs.split(',').length > 1)
+  const multipleJobsWorked = data.filter(employee => {
+    return employee.jobs && employee.jobs.split(',').length > 1
+  })
 
   if ((sohEmployees && sohEmployees.length > 0) || 
     (callInPayEmployees && callInPayEmployees.length > 0) || 

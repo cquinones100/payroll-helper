@@ -26,7 +26,12 @@ class EmployeeRowParser {
   }
 
   parse() {
-    if (!this.row) { return this.completedRows }
+    if (!this.row && this.isTheLastRow) { 
+      this.parseTheLastRow()
+      return this.completedRows
+    } else if (!this.row && !this.isTheLastRow) {
+      return this.completedRows
+    }
 
     if (!this.timeCardMap.isAValidRow) { 
       if (this.isTheLastRow) { this.parseTheLastRow() }

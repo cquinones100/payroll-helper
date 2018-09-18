@@ -34,7 +34,7 @@ class TimeCardMap {
   }
 
   validateRow() {
-    return this.isANamedRow() || this.isADatedRow()
+    return this.row && (this.isANamedRow() || this.isADatedRow())
   }
 
   attributeValue(attribute) {
