@@ -62,7 +62,7 @@ class TimeCardMap {
   payrollIdFromRow() {
     const payrollId = this.attributeFromRow('payrollId')
 
-    if (payrollId && payrollId !== '' && payrollId.match(/^[0-9]*$/)) {
+    if (payrollId && payrollId !== '' && payrollId.trim().match(/^[0-9]*$/)) {
       return payrollId
     }
   }
