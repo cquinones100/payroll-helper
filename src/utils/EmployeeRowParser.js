@@ -73,9 +73,9 @@ class EmployeeRowParser {
 
   calculateTips(tipSheet, employee) {
     if (tipSheet) {
-      const tipRows = Papa
-        .parse(tipSheet)
-        .data
+      const parsedRows = Papa.parse(tipSheet).data
+
+      const tipRows = parsedRows
         .filter(row => (
           parseInt(row[1], 10) === parseInt(employee.payrollId, 10) || 
           row[0].split(', ').reverse().join(' ') === employee.name
