@@ -25,7 +25,7 @@ class CsvBuilder {
   }
 
   buildPayLines(employee) {
-    const payCategories = ['regularHours', 'tips', 'overTimeHours', 'sohHours', 'callInPayHours'] 
+    const payCategories = ['regularHours', 'tips', 'overTimeHours', 'sohHours', 'callInPayHours', 'casht'] 
 
     return (
       payCategories.reduce((string, category) => {
@@ -70,7 +70,7 @@ class CsvBuilder {
 
 
     if (this.categoryPresent(casht)) {
-      return `${employee.payrollId},E,CASHT,,${employee.tips}`
+      return `${employee.payrollId},E,CASHT,,${employee.casht}`
     }
   }
 
