@@ -52,10 +52,14 @@ class EmployeeRowParser {
 
   addWorkDay() {
     const { row, rowFormat, name, payrollId, ...rest } = this.timeCardMap
-    const { sohHours, callInPayHours } = this.location.region
+    const { callInPayHours } = this.location.region
     const { totalHours, date } = this
 
-    const isSoh = parseFloat(totalHours) > parseFloat(sohHours)
+    const hoursSpread = (new Date('1970-1-1 ' + this.timeCardMap.timeOut) -
+      new Date('1970-1-1 ' + this.timeCardMap.timeIn)
+    ) / 1000 / 60 / 60
+
+    const isSoh = parseFloat(totalHours) > parseFloat(hoursSpread)
     const isCallInPay = parseFloat(totalHours) < parseFloat(callInPayHours)
 
     this.completedRows[this.completedRows.length - 1]
