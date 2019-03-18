@@ -257,7 +257,7 @@ class LandingPage extends Component {
 
     return(
       <Grid>
-        <Row><div style={{ height: '10px' }} /></Row>
+        <Row><div style={{ height: '10px' }} />Version 0.01</Row>
         <Row className='show-grid'>
           <Col xs={8} md={4} lg={4}>
             { employeeData && <EmployeeDataTable employees={employeeData} /> }
@@ -346,5 +346,3 @@ class LandingPage extends Component {
 }
 
 export default LandingPage
-// { selectedLocation && (
-// ) }
